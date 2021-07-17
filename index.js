@@ -5,9 +5,21 @@ const fetchData = async() => {
     let { products } = await(await fetch("https://yellowriddle.netlify.app/products.json")).json();
     cart = products.map((product) => ({...product, qty: 1}));
     
+    updateCart(cart)
+    updatePrice(cart);
+  } catch (error) {
+    console.log(error);
+  }
+
+};
+
+fetchData();
+
+function updateCart(cart) {
     let container = document.querySelector(".product-cart-1");
     let cartHeading = document.querySelector(".cart-heading");
     cartHeading.innerHTML = `My Cart (${cart.length})`;
+    container.innerHTML = "";
 
     for (let i = 0; i < cart.length; i++) {
       let html = `
@@ -41,22 +53,14 @@ const fetchData = async() => {
               </div>
               <div class="action-btn">
                 <button class="save-later">SAVE FOR LATER</button>
-                <button class="remove-btn">REMOVE<button>
+                <button onclick="removeItem(${i})" class="remove-btn">REMOVE<button>
               </div>
             </div> 
           </div>`;
 
       container.innerHTML += html;
     }
-
-    updatePrice(cart);
-  } catch (error) {
-    console.log(error);
-  }
-
-};
-
-fetchData();
+}
 
 function decrementQty(i) {
   if(cart[i].qty === 1) return
@@ -96,4 +100,10 @@ function updateQty(i){
     let getItem = document.querySelectorAll("#quantity__input")[i];
     cart[i].qty = parseInt(getItem.value);
     updatePrice(cart)
+}
+
+function removeItem(i){
+  cart = cart.filter((_, index) => index !== i )
+  updateCart(cart)
+  updatePrice(cart)
 }
